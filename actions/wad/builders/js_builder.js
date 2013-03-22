@@ -20,16 +20,15 @@ module.exports = builder = function(url, settings){
         
         //load the js and minify it
         request(url, function (error, response, body) {
-            var note = "/* SOURCE: "+url+" */\n";
             if (error) {
-                body = "/* ERROR: " + error + " */";
-            }else{                
-                body = uglify.minify(body, {fromString: true}).code;
+                callback({
+                    error: error + " on " + url
+                });
+            }else{ 
+                callback({
+                    js: "/* SOURCE: "+url+" */\n"+uglify.minify(body, {fromString: true}).code
+                });
             }
-            
-            callback({
-                js: note+body
-            });
         });
     };
     

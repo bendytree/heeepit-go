@@ -9,6 +9,9 @@ module.exports = {
 	},
 	get: function(key, callback){
 	    callback(data[key]);
+	},
+	delete: function(key){
+	    delete data[key];
 	}
 };
 

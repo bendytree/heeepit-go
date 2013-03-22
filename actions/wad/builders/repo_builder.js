@@ -1,5 +1,6 @@
 
-var helpers = require("../../helpers");
+var helpers = require("../helpers");
+var lib_repo = require("../lib_repo");
 
 module.exports = builder = function(url, settings){
     this.url = url;

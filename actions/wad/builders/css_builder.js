@@ -19,18 +19,18 @@ module.exports = builder = function(url, settings){
         
         //load the css and minify it
         request(url, function (error, response, body) {
-            var note = "/* SOURCE: "+url+" */\n";
             if (error) {
-                //use the error message as the body
-                body = "/* ERROR: " + error + " */";
+                callback({
+                    error: error + " on " + url
+                });
             }else{
                 //minify
                 body = uglifycss.processString(body);
+                
+                callback({
+                    cssjs: "/* SOURCE: "+url+" */\n"+helpers.cssToJs(body)
+                });
             }
-            
-            callback({
-                cssjs: note+helpers.cssToJs(body)
-            });
         });
     };
     

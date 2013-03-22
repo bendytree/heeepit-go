@@ -12,6 +12,23 @@ module.exports = helpers = {
         css = css.replace(helpers.rx.oneOrMoreNewlines, ' ');
         return 'document.write("<style type=text/css> '+css+' </style>");';
     },
+    formatErrors: function(errors, settings){
+        return @"
+            (function(loud){
+                var errors = "+JSON.stringify(errors)+@";
+                if(loud){
+                    errors.unshift(errors.length+' error(s) packaging your assets:');
+                    alert(errors.join('\n'));
+                }else{
+                    if(console && console.log){
+                        for(var i=0; i<errors.length; i++){
+                            console.log(errors[i]);
+                        }
+                    }
+                }
+            })("+settings.loud+@");
+        ";
+    },
     
     //pre compiled regexes
     rx: {        

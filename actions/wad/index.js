@@ -1,7 +1,7 @@
 
-var repo = require('../../repo');
-var settings_parser = require('./settings_parser');
-var asset_builder = require('./asset_builder');
+var wad_repo = require('wad_repo');
+var settings_parser = require('settings_parser');
+var asset_builder = require('asset_builder');
 
 module.exports = function(req, res){       
     //parse the settings
@@ -13,13 +13,18 @@ module.exports = function(req, res){
         return;
     }
     
+    //clear cache if force
+    if(settings.force){
+        wad_repo.delete(key); //async, no callback
+    }
+    
     var finish = function(){
         //build the response
-        asset_builder(settings, function(js){
+        asset_builder(settings, function(err, js){
             //cache the result
-            if(!settings.debug)
-                repo.set(key, js);
-        
+            if(!settings.debug && !err)
+                wad_repo.set(key, js);
+            
             //respond to the request
             res.send(js);
         });
@@ -28,7 +33,7 @@ module.exports = function(req, res){
     //look in the cache?
     var couldBeCached = !settings.force && !settings.debug;
     if(couldBeCached){
-        repo.get(settings.key, function(js){
+        wad_repo.get(settings.key, function(js){
             //if cached, we're done
             if(js){
                 res.send(js);

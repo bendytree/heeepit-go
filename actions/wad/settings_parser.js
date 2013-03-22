@@ -66,6 +66,7 @@ module.exports = function(req){
         libs: libs,
         debug: debug,
         force: hasFlag("force"),
+        loud: hasFlag("loud"),
         key: key,
         hasFlag: hasFlag
     };

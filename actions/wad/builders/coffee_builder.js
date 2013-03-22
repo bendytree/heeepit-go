@@ -20,9 +20,10 @@ module.exports = builder = function(url, settings){
         
         //load it
         request(url, function (error, response, body) {
-            var note = "/* SOURCE: "+url+" */\n";
             if (error) {
-                body = "/* ERROR: " + error + " */";
+                callback({
+                    error: error + " on " + url
+                });
             }else{
                 try {
                     //compile coffee to js
@@ -30,14 +31,17 @@ module.exports = builder = function(url, settings){
                     
                     //minify the js
                     body = uglify.minify(body, {fromString: true}).code;
+                    
+                    //callback
+                    callback({
+                        js: "/* SOURCE: "+url+" */\n"+body
+                    });
                 }catch(error){
-                    body = "/* ERROR: " + error + " */";
+                    callback({
+                        error: error + " on " + url
+                    });
                 }
             }
-            
-            callback({
-                js: note+body
-            });
         });
     };
     

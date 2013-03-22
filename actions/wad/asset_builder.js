@@ -52,12 +52,15 @@ module.exports = function(settings, finalCallback){
         //sort all the results into js & css
         var js = [];
         var cssjs = [];
+        var errors = [];
         for(var i=0; i<results.length; i++){
             var result = results[i];
             if(result.cssjs)
                 cssjs.push(result.cssjs);
             if(result.js)
                 js.push(result.js);
+            if(result.error)
+                errors.push(result.error);
         }
         
         //add the css before the js (local less needs to exist before js parser)
@@ -65,10 +68,15 @@ module.exports = function(settings, finalCallback){
             js = cssjs.combine(js);
         }
         
+        //add error messages
+        if(errors){
+            js.push(helpers.formatErrors(errors, settings));
+        }
+        
         //combine it all into js
         js = js.join("\n\n");
         
-	    finalCallback(js);
+	    finalCallback(!!errors, js);
     });
 };
 
