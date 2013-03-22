@@ -7,30 +7,38 @@ module.exports = function(req){
     var qs = helpers.getQueryStringFromUrl(req.url);
     if(!qs) return {error:"No query string was provided."};
     
-    //sort urls, flags, and names
+    //separate libs and flags
     var flags = [];
-    var urls = [];
     var libs = [];
-    var refererBaseUrl = req.headers.referer.replace(baseUrlRegex, '')+'/';
+    var refererBaseUrl = req.headers.referer.replace(helpers.rx.baseUrlRegex, '')+'/';
+    var isSpecificToRefererUrl = false;
+    
+    //go through each piece of the qs
     _.each(qs.split(","), function(i){
         if(i.indexOf("--") == 0){
+            //clean up flags
             flags.push(i.substring(2).toLowerCase());
-        }else if((/[^_-a-z0-9]/i).test(i)){
+        }else if(helpers.rx.isLibName.test(i)){
+            //don't mess with lib names
             libs.push(i);
-        }else{            
+        }else{
+            //for urls, include full url if needed
             if(i.indexOf("http") != 0){
-                i = refererBaseUrl + "/" + i.replace(/^\/*/, "");
+                isSpecificToRefererUrl = true;
+                i = refererBaseUrl + "/" + i.replace(helpers.rx.trimLeadingForwardSlashes, "");
             }
-            urls.push(i);
+            libs.push(i);
         }
     });
+    
+    //convenience function for checking flags later
     var hasFlag = function(flag){
         return flags.indexOf(flag) != -1;
     };
     
     //validate assets
-    if(!(urls.length + libs.length)){
-        return {error:"At least one url or lib is required."};
+    if(!libs.length){
+        return {error:"At least one lib is required."};
     }
     
     //debug?
@@ -40,23 +48,25 @@ module.exports = function(req){
     }else if(hasFlag("debug")){
         debug = true;
     }else{
-        debug = req.headers.referer && isDebugRegex.test(req.headers.referer);
+        debug = req.headers.referer && helpers.rx.isDebug.test(req.headers.referer);
     }
     
-    var key = "smash:"+crypto.createHash('md5').update([
-        refererBaseUrl,
-        urls.join('|'),
-        libs.join('|'),
-        _.filter(flags, function(f){ return f != 'force' }).join('|')
-    ].join('|')).digest("hex");
+    //build the key
+    var key = "wad:"+crypto.createHash('md5').update(
+        [].concat(
+            isSpecificToRefererUrl ? ["for:"+refererBaseUrl] : ["generic"],
+            _.sortBy(libs, helpers.returnSelf),
+            _.sortBy(_.filter(flags, function(f){ return f != 'force' }), helpers.returnSelf)
+        ).join('|')
+    ).digest("hex");
     
     //build the settings object
     return {
         flags: flags,
-        urls: urls,
         libs: libs,
         debug: debug,
         force: hasFlag("force"),
-        key: key
+        key: key,
+        hasFlag: hasFlag
     };
 };

@@ -1,8 +1,7 @@
 
-var helpers = require("../../helpers");
 var request = require('request');
-var uglify = require("uglify-js");
-
+var helpers = require('helpers');
+var uglifycss = require('uglifycss');
 
 module.exports = builder = function(url, settings){
     this.url = url;
@@ -13,31 +12,33 @@ module.exports = builder = function(url, settings){
         if(this.useOriginal){
             //just reference the original script
             callback({
-                js: "document.write(\"<script type='text/javascript' src='"+this.url+"'></script>\");"
+                cssjs: helpers.cssToJs("@import:url(\""+this.url+"\");")
             });
             return;
         }
         
-        //load the js and minify it
+        //load the css and minify it
         request(url, function (error, response, body) {
             var note = "/* SOURCE: "+url+" */\n";
             if (error) {
+                //use the error message as the body
                 body = "/* ERROR: " + error + " */";
-            }else{                
-                body = uglify.minify(body, {fromString: true}).code;
+            }else{
+                //minify
+                body = uglifycss.processString(body);
             }
             
             callback({
-                js: note+body
+                cssjs: note+helpers.cssToJs(body)
             });
         });
     };
     
     this.getDependencyNames = function(){
-        return []; //js never has a dependency
+        return []; //css never has a dependency
     };
 };
 
-builder.supports = function(lib){
-    return helpers.rx.isUrlJs.test(lib);
+builder.supports = function(url){
+    return helpers.rx.isUrlCss.test(url);
 };

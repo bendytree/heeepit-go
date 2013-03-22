@@ -1,7 +1,5 @@
 
 var repo = require('../../repo');
-
-var key_builder = require('./key_builder');
 var settings_parser = require('./settings_parser');
 var asset_builder = require('./asset_builder');
 
@@ -14,10 +12,6 @@ module.exports = function(req, res){
         res.send(settings.error);
         return;
     }
-    
-    //force means clear the cache
-    if(settings.force)
-        repo.delete(settings.key); //async, no callback
     
     var finish = function(){
         //build the response
@@ -40,7 +34,7 @@ module.exports = function(req, res){
                 res.send(js);
                 return;
             }
-        
+            
             finish();
         });
     }else{

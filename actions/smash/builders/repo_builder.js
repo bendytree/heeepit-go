@@ -1,10 +1,12 @@
 
+var helpers = require("../../helpers");
+
 module.exports = builder = function(url, settings){
     this.url = url;
+    this.settings = settings;
     
     this.build = function(callback){
         callback({
-            js: null
         });
     };
     
@@ -13,6 +15,6 @@ module.exports = builder = function(url, settings){
     };
 };
 
-builder.supports = function(url, settings){
-    return settings.isDebug && isJsRegex.test(url);
+builder.supports = function(url){
+    return helpers.rx.isLibName.test(url);
 };

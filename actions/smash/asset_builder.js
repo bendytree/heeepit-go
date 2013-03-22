@@ -1,37 +1,31 @@
 
 var async = require('async');
-var url_builder_classes = require('./builders');
+var builder_classes = require('./builders');
+var repo_builder_class = require('./builders/repo_builder');
 var dependency_resolver = require('./dependency_resolver');
 
-var getBuilder = function(url, settings){
-    
-};
 
 module.exports = function(settings, finalCallback){    
-    //get a builder for each repo
-	var repo_builders = _.map(settings.repos, function(repo){
-	    return new repo_builder_class(repo, settings);
-    });
-    
-    //get a builder for each url
-	var url_builders = _.map(settings.urls, function(url){
-	    var builderClass = _.find(url_builder_classes, function(url_builder_class){
-            return url_builder_class.supports(url, settings);
+    //get a builder for each lib
+	var builders = _.map(settings.libs, function(lib){
+	    var builderClass = _.find(builder_classes, function(builder_class){
+            return builder_class.supports(lib);
         });
-        return new builderClass(url, settings);
+        return new builderClass(lib, settings);
     });
-    
-    //combine into one group
-    var builders = [].concat(repo_builders, url_builders);
     
     //get complete list of dependencies (unordered)
     for(var i=0; i<builders.length; i++){
         var builder = builders[i];
-        var dependencyNames = builder.getDependencyNames();
-        var unknownDependenciesNames = _.filter(dependencyNames, function(name){
+        
+        //get unknown dependencies of the current lib
+        var unknownDependenciesNames = _.filter(builder.getDependencyNames(), function(name){
             return !_.any(builders, function(b){ return b.name == name; });
         });
+        
+        //add those unknown dependencies
         _.each(unknownDependenciesNames, function(name){
+            //dependencies can only be repo names (as opposed to urls)
             builders.push(new repo_builder_class(name, settings));
         });
     }
@@ -57,19 +51,18 @@ module.exports = function(settings, finalCallback){
     async.parallel(loaders, function(err, results){
         //sort all the results into js & css
         var js = [];
-        var css = [];
+        var cssjs = [];
         for(var i=0; i<results.length; i++){
             var result = results[i];
-            if(result.css)
-                css.push(result.css);
+            if(result.cssjs)
+                cssjs.push(result.cssjs);
             if(result.js)
                 js.push(result.js);
         }
         
-        //add the css as the last js
-        if(css){
-            css = css.join(' ').replace(/\n+/g, ' ').replace(/"/g, '\"');
-            js.push('document.write("<style type=text/css> "'+css+' </style>");');
+        //add the css before the js (local less needs to exist before js parser)
+        if(cssjs){
+            js = cssjs.combine(js);
         }
         
         //combine it all into js
