@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 
-app.get('/:type(js|css)/:flags?*', require('./actions/smasher'));
+app.get('/smash', require('./actions/smash'));
 app.get('/test', require('./actions/test'));
 
 app.listen(3000);

@@ -1,0 +1,36 @@
+
+
+You write the JavaScript and CSS, we make it fast.
+
+Say your website has these references:
+<pre>
+<script src='http://cnd.sdfioj.google.com/jquery.min.js'></script>
+<script src='http://cnd.sdfioj.google.com/underscore.min.js'></script>
+<script src='http://yoursite.com/site.coffee'></script>
+<link href='http://cnd.sdfioj.google.com/jquery-ui.min.css'/>
+<link href='http://yoursite.com/site.less'/>
+</pre>
+
+Each of these assets makes a separate request, so loading takes a while.
+
+If you're smart, you use some kind of bundler to manually combine all the assets. 
+That means your assets take 2 requests instead of 5 (much better).
+
+But if you've ever messed with a bundler, you know that setup can be a
+huge pain - especially if you're using coffee, less, or sass. And wouldn't
+1 request be better than 2? And now that you're bundling everything, you
+don't get the incredible response rate of a CDN. 
+
+MonsterSmash is insanely simple solution to this whole mess. 
+<pre>
+<script src='http://monstersmash.com?jquery-ui,underscore,http://yoursite.com/site.coffee,http://yoursite.com/site.less'></script>
+</pre>
+
+BOOM!
+
+Monster smash combines all your scripts and css into one file,
+caches it in a blazing-fast redis database, and pushes it to CDNs
+across the country for the fastest response times you've ever seen.
+
+Notice a couple of features:
+'jquery-ui' isn't a url, it's a known library
