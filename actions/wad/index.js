@@ -1,7 +1,7 @@
 
 var wad_repo = require('wad_repo');
 var settings_parser = require('settings_parser');
-var asset_builder = require('asset_builder');
+var wad_builder = require('wad_builder');
 
 module.exports = function(req, res){       
     //parse the settings
@@ -20,7 +20,7 @@ module.exports = function(req, res){
     
     var finish = function(){
         //build the response
-        asset_builder(settings, function(err, js){
+        wad_builder(settings, function(err, js){
             //cache the result
             if(!settings.debug && !err)
                 wad_repo.set(key, js);

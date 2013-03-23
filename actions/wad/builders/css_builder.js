@@ -12,7 +12,8 @@ module.exports = builder = function(url, settings){
         if(this.useOriginal){
             //just reference the original script
             callback({
-                cssjs: helpers.cssToJs("@import:url(\""+this.url+"\");")
+                type: 'css',
+                js: helpers.cssToJs("@import:url(\""+this.url+"\");")
             });
             return;
         }
@@ -28,14 +29,15 @@ module.exports = builder = function(url, settings){
                 body = uglifycss.processString(body);
                 
                 callback({
-                    cssjs: "/* SOURCE: "+url+" */\n"+helpers.cssToJs(body)
+                    type: 'css',
+                    js: "/* SOURCE: "+url+" */\n"+helpers.cssToJs(body)
                 });
             }
         });
     };
     
-    this.getDependencyNames = function(){
-        return []; //css never has a dependency
+    this.getDependencyNames = function(callback){
+        callback([]); //css never has a dependency
     };
 };
 

@@ -13,6 +13,7 @@ module.exports = builder = function(url, settings){
         if(this.useOriginal){
             //just reference the original script
             callback({
+                type: 'js',
                 js: "document.write(\"<script type='text/javascript' src='"+this.url+"'></script>\");"
             });
             return;
@@ -26,14 +27,15 @@ module.exports = builder = function(url, settings){
                 });
             }else{ 
                 callback({
+                    type: 'js',
                     js: "/* SOURCE: "+url+" */\n"+uglify.minify(body, {fromString: true}).code
                 });
             }
         });
     };
     
-    this.getDependencyNames = function(){
-        return []; //js never has a dependency
+    this.getDependencyNames = function(callback){
+        callback([]); //js never has a dependency
     };
 };
 

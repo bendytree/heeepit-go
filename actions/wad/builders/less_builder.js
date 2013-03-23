@@ -13,7 +13,8 @@ module.exports = builder = function(url, settings){
         if(this.useOriginal){
             //just reference the original script
             callback({
-                cssjs: "document.write(\"<link rel='stylesheet/less' type='text/css' href='"+this.url+"' />\");"
+                type: 'css',
+                js: "document.write(\"<link rel='stylesheet/less' type='text/css' href='"+this.url+"' />\");"
             });
             return;
         }
@@ -36,7 +37,8 @@ module.exports = builder = function(url, settings){
                         body = uglifycss.processString(css);
                         
                         callback({
-                            cssjs: "/* SOURCE: "+url+" */\n"+helpers.cssToJs(body)
+                            type: 'css',
+                            js: "/* SOURCE: "+url+" */\n"+helpers.cssToJs(body)
                         });
                     }
                 });
@@ -44,9 +46,9 @@ module.exports = builder = function(url, settings){
         });
     };
     
-    this.getDependencyNames = function(){
+    this.getDependencyNames = function(callback){
         //use local less parser if we're using the original
-        return this.useOriginal ? ["less"] : [];
+        callback(this.useOriginal ? ["less"] : []);
     };
 };
 

@@ -13,6 +13,7 @@ module.exports = builder = function(url, settings){
         //debug or local urls should just reference the original script
         if(this.useOriginal){
             callback({
+                type: 'js',
                 js: "document.write(\"<script type='text/coffeescript' src='"+this.url+"'></script>\");"
             });
             return;
@@ -34,6 +35,7 @@ module.exports = builder = function(url, settings){
                     
                     //callback
                     callback({
+                        type: 'js',
                         js: "/* SOURCE: "+url+" */\n"+body
                     });
                 }catch(error){
@@ -45,9 +47,9 @@ module.exports = builder = function(url, settings){
         });
     };
     
-    this.getDependencyNames = function(){
+    this.getDependencyNames = function(callback){
         //need to reference coffee-script parser if we're using direct reference
-        return this.useOriginal ? ['coffee-script'] : [];
+        callback(this.useOriginal ? ['coffee-script'] : []);
     };
 };
 
