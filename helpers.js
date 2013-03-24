@@ -1,20 +1,20 @@
 
 module.exports = helpers = {
-    getQueryStringFromUrl: function(url){
+    getQueryStringFromUrl: function (url){
         var indexOfQuestionMark = url.indexOf("?");
         if(indexOfQuestionMark == -1 || indexOfQuestionMark == url.length-1){
             return null;
         }
         return url.substring(indexOfQuestionMark+1);  
     },
-    returnSelf: function(x){ return x; },
-    cssToJs: function(css){
+    returnSelf: function (x){ return x; },
+    cssToJs: function (css){
         css = css.replace(helpers.rx.oneOrMoreNewlines, ' ');
         return 'document.write("<style type=text/css> '+css+' </style>");';
     },
-    formatErrors: function(errors, settings){
+    formatErrors: function (errors, settings){
         return @"
-            (function(loud){
+            (function (loud){
                 var errors = "+JSON.stringify(errors)+@";
                 if(loud){
                     errors.unshift(errors.length+' error(s) packaging your assets:');

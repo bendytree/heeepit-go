@@ -1,5 +1,5 @@
 
-var helpers = require("../helpers");
+var helpers = require("/helpers");
 var Package = require("/models/package");
 
 module.exports = builder = function(name, settings){

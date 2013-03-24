@@ -5,7 +5,7 @@ var async = require('async');
 var request = require('request');
 var builder_selector = require('builder_selector');
 
-module.exports = function(Package){
+module.exports = function (Package){
     
     var srcs = [
         {
@@ -186,7 +186,7 @@ module.exports = function(Package){
         }
     ];
     
-    var names = _.map(srcs, function(src){
+    var names = _.map(srcs, function (src){
         return src.name;
     });
     
@@ -194,20 +194,20 @@ module.exports = function(Package){
            .where('name')
            .in(names)
            .select('name')
-           .exec(function(err, knownNames)
+           .exec(function (err, knownNames)
     {
         var unknownNames = _.difference(names, knownNames);
-        var unknownSrcs = _.map(unknownNames, function(name){
-            return _.find(srcs, function(src){
+        var unknownSrcs = _.map(unknownNames, function (name){
+            return _.find(srcs, function (src){
                 return src.name == name;
             });
         });
         
         async.parallel(
-            _.map(unknownSrcs, function(src){
-                return function(callback){
+            _.map(unknownSrcs, function (src){
+                return function (callback){
                     var builder = builder_selector(src.src);
-                    builder.build(function(result){
+                    builder.build(function (result){
                         if(result.error){
                             callback(result.error);
                             return;

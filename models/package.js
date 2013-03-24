@@ -12,7 +12,7 @@ module.exports = Package = mongoose.model("Package", mongoose.Schema({
   createdOn: { type: Date, default: Date.now }
 }));
 
-mongoose.connect("localhost", "scriptsmash", function(err, db) {
+mongoose.connect("localhost", "scriptsmash", function (err, db) {
   if(err) {
       console.log("Error connecting to db: "+err);
   }else{

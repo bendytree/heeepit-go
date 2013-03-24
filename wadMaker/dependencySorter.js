@@ -1,6 +1,6 @@
 
 module.exports = {
-    order: function(items, idSelector, edgeIdSelector){
+    sort: function(items, idSelector, edgeIdSelector){
         if(!items)
             return [];
         

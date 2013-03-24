@@ -1,5 +1,5 @@
 
-var helpers = require("../../helpers");
+var helpers = require("/helpers");
 var request = require('request');
 var uglify = require("uglify-js");
 var coffee = require('coffee-script');

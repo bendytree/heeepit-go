@@ -1,8 +1,8 @@
 
+var helpers = require('/helpers');
+
 var request = require('request');
-var helpers = require('helpers');
 var uglifycss = require('uglifycss');
-var less = require('less');
 
 module.exports = builder = function(url, settings){
     this.url = url;
@@ -14,7 +14,7 @@ module.exports = builder = function(url, settings){
             //just reference the original script
             callback({
                 type: 'css',
-                js: "document.write(\"<link rel='stylesheet/less' type='text/css' href='"+this.url+"' />\");"
+                js: helpers.cssToJs("@import:url(\""+this.url+"\");")
             });
             return;
         }
@@ -27,31 +27,21 @@ module.exports = builder = function(url, settings){
                 });
             }else{
                 //minify
-                less.render(body, function (error, css) {
-                    if(error){
-                        callback({
-                            error: error + " on " + url
-                        });
-                    }else{
-                        //now minify
-                        body = uglifycss.processString(css);
-                        
-                        callback({
-                            type: 'css',
-                            js: "/* SOURCE: "+url+" */\n"+helpers.cssToJs(body)
-                        });
-                    }
+                body = uglifycss.processString(body);
+                
+                callback({
+                    type: 'css',
+                    js: "/* SOURCE: "+url+" */\n"+helpers.cssToJs(body)
                 });
             }
         });
     };
     
     this.getDependencyNames = function(callback){
-        //use local less parser if we're using the original
-        callback(this.useOriginal ? ["less"] : []);
+        callback([]); //css never has a dependency
     };
 };
 
 builder.supports = function(url){
-    return helpers.rx.isUrlLess.test(url);
+    return helpers.rx.isUrlCss.test(url);
 };
