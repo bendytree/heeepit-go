@@ -5,7 +5,7 @@ var package_builder_class = require('./builders/package_builder');
 var dependency_resolver = require('./dependency_resolver');
 
 
-var addNewDependencies = function(names, q, builders){
+var addNewDependencies = function(names, q, builders) {
     //get unknown package names
     var unknown = _.difference(names, _.map(builders, function(b){ return b.name; }));
     
@@ -20,7 +20,7 @@ var addNewDependencies = function(names, q, builders){
     });
 };
 
-var makeDependencyFinderTask = function(builder, q, builders){
+var makeDependencyFinderTask = function(builder, q, builders) {
     return function(callback){
         builder.getDependencyNames(function(names){
             addNewDependencies(names, q, builders);
@@ -29,7 +29,7 @@ var makeDependencyFinderTask = function(builder, q, builders){
     };
 };
 
-module.exports = function(settings, finalCallback){    
+module.exports = function(settings, finalCallback) {    
     //get a builder for each lib
 	var builders = _.map(settings.libs, function(lib){
 	    return builder_maker(lib);
@@ -93,7 +93,7 @@ module.exports = function(settings, finalCallback){
     };
     
     //kick off the dependency queue
-    dependencyQueue.push(_.map(builders, function(builder){
+    dependencyQueue.push(_.map(builders, function(builder) {
         return makeDependencyFinderTask(builder, dependencyQueueTasks, builders);
     }));
 };

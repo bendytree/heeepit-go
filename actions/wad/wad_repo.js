@@ -2,15 +2,15 @@
 var data = {};
 
 module.exports = {
-	set: function(key, val){
+	set: function (key, val) {
 	    setTimeout(function(){
     	    data[key] = val;
         }, 1);
 	},
-	get: function(key, callback){
+	get: function (key, callback) {
 	    callback(data[key]);
 	},
-	delete: function(key){
+	delete: function (key) {
 	    delete data[key];
 	}
 };
