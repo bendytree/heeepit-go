@@ -1,0 +1,16 @@
+(function () {
+    var errors = <%- JSON.stringify(errors) %>;
+    var loud = <%- settings.loud ? 'true' : 'false' %>;
+    
+    //always log
+    if(console && console.log){
+        for(var i=0; i<errors.length; i++){
+            console.log(errors[i]);
+        }
+    }
+    
+    if(loud){
+        errors.unshift(errors.length+' error(s) packaging your assets:');
+        alert(errors.join('\n'));
+    }
+})();
